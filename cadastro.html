@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro - Compra Certa Repasse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #f4f4f4, #eaeaea);
+      margin: 0;
+      padding: 40px 20px;
+      color: #222;
+    }
+
+    .container {
+      max-width: 600px;
+      background-color: #fff;
+      padding: 40px 30px;
+      margin: 0 auto;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      border-radius: 20px;
+    }
+
+    h1 {
+      color: #cc0000;
+      text-align: center;
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+
+    form {
+      margin-top: 10px;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #000;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      box-sizing: border-box;
+      transition: border 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #cc0000;
+      outline: none;
+    }
+
+    .submit-btn {
+      background-color: #cc0000;
+      color: white;
+      padding: 14px 20px;
+      margin-top: 30px;
+      border: none;
+      border-radius: 30px;
+      width: 100%;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: #990000;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 25px;
+      color: #cc0000;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastre-se e Resgate o Código</h1>
+
+    <form id="cadastroForm">
+      <label for="nome">Nome completo:</label>
+      <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required />
+
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com" required />
+
+      <label for="telefone">Telefone:</label>
+      <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000" required />
+
+      <input type="submit" value="Cadastrar" class="submit-btn" />
+    </form>
+
+    <a href="index.html" class="back-link">← Voltar</a>
+  </div>
+
+  <script>
+    document.getElementById('cadastroForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const dados = new FormData(form);
+
+      fetch('https://script.google.com/macros/s/AKfycbwP1XhpDYmw0QJU7605cZ6FjmbJyNk5bDnRY0qK7lwMlDqyxAbqU5nIuYNq47YX4GJy3Q/exec', {
+        method: 'POST',
+        body: dados,
+      })
+        .then((response) => {
+          if (response.ok) {
+            window.location.href = 'obrigado.html'; // redireciona para a página de confirmação
+          } else {
+            alert('❌ Erro ao enviar. Tente novamente.');
+          }
+        })
+        .catch((error) => {
+          console.error('Erro:', error);
+          alert('❌ Erro de conexão. Verifique sua internet.');
+        });
+    });
+  </script>
+</body>
+</html>
