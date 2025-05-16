@@ -36,8 +36,7 @@
       color: #000;
     }
     input[type="text"],
-    input[type="email"],
-    input[type="password"] {
+    input[type="email"] {
       width: 100%;
       padding: 12px;
       border: 1px solid #ccc;
@@ -179,7 +178,7 @@
       const form = e.target;
       const dados = new FormData(form);
 
-      fetch('https://script.google.com/macros/s/AKfycbwP1XhpDYmw0QJU7605cZ6FjmbJyNk5bDnRY0qK7lwMlDqyxAbqU5nIuYNq47YX4GJy3Q/exec', {
+      fetch('https://script.google.com/macros/s/AKfycbwFxsEApRl32CagvVguqODcmPQi6931GlXZCHaIJEJ1j90G-yo9CHZhlD-_oSJbzB3R/exec', {
         method: 'POST',
         body: dados,
       })
