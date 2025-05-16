@@ -183,19 +183,26 @@
         method: 'POST',
         body: dados,
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => {
         if (data.status === 'success') {
           window.location.href = 'obrigado.html';
         } else if (data.status === 'duplicate') {
           erro.textContent = '❌ Você já está cadastrado com este CPF ou e-mail.';
+        } else if (data.status === 'error') {
+          erro.textContent = `❌ Erro no servidor: ${data.message || 'Tente novamente.'}`;
         } else {
           erro.textContent = '❌ Erro ao enviar os dados. Tente novamente.';
         }
       })
       .catch(error => {
         console.error('Erro:', error);
-        erro.textContent = '❌ Erro de conexão. Verifique sua internet.';
+        erro.textContent = '❌ Erro de conexão. Verifique sua internet e tente novamente.';
       });
     });
   </script>
