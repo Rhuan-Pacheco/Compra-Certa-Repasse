@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Indique e Ganhe - Compra Certa Repasse</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Indique amigos para comprar veículos de repasse e ganhe dinheiro com a Compra Certa Repasse! Cadastre-se agora e receba seu código de indicação.">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -30,6 +31,7 @@
 
     .logo img {
       max-width: 180px;
+      height: auto;
     }
 
     h1 {
@@ -47,6 +49,7 @@
       border-radius: 12px;
       margin-bottom: 30px;
       font-size: 15.5px;
+      line-height: 1.6;
     }
 
     .info strong {
@@ -59,11 +62,11 @@
       fill: #cc0000;
     }
 
-    form {
+    .cta-button {
       text-align: center;
     }
 
-    .buttons input {
+    .cta-button button {
       padding: 14px 30px;
       border: none;
       border-radius: 30px;
@@ -73,17 +76,21 @@
       background-color: #cc0000;
       cursor: pointer;
       transition: background-color 0.3s ease;
+      box-shadow: 0 4px 12px rgba(204, 0, 0, 0.2);
     }
 
-    .buttons input:hover {
+    .cta-button button:hover {
       background-color: #990000;
     }
 
-    /* Responsividade para celular */
     @media (max-width: 600px) {
       .container {
         width: 90%;
         padding: 20px 15px;
+      }
+
+      h1 {
+        font-size: 22px;
       }
     }
   </style>
@@ -91,29 +98,30 @@
 <body>
   <div class="container">
 
-    <!-- Espaço para logotipo -->
+    <!-- Logotipo -->
     <div class="logo">
-      <!-- Substitua o src abaixo pela URL real do seu logotipo -->
-      <img src="images.png" alt="Compra Certa Repasse">
+      <img src="https://compracertarepasse.com.br/wp-content/uploads/2024/03/LOGO-COMPRA-CERTA-METTALIC.png" alt="Logo da Compra Certa Repasse">
     </div>
 
+    <!-- Título -->
     <h1>INDIQUE E GANHE</h1>
 
+    <!-- Texto informativo -->
     <div class="info">
       <p>
-        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" aria-hidden="true" role="presentation"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         <strong>Indique e Ganhe na Compra Certa Repasse de Veículos!</strong>
       </p>
-      <p>Você tem amigos que precisam compra um veículo para uso próprio ou revender? Indique-nos e <strong>ganhe dinheiro</strong> toda vez que ele fechar negócio! 🔥</p>
+      <p>Você tem amigos que precisam comprar um veículo para uso próprio ou revenda? Indique-nos e <strong>ganhe dinheiro</strong> toda vez que ele fechar negócio! 🔥</p>
 
       <p><strong>Como funciona:</strong><br>
-        ✅ Indique um comprador ou lojista interessado em veículos de repasse a baixo da fipe.<br>
+        ✅ Indique um comprador ou lojista interessado em veículos de repasse abaixo da FIPE.<br>
         ✅ Ele fecha a primeira compra conosco.<br>
         ✅ Você recebe sua comissão direto no bolso! 🤑</p>
 
       <p>
         🚀 <strong>Indicações sem limite</strong><br>
-        ⚡ <strong>Pagamento no pix após a compra da sua indicação</strong><br>
+        ⚡ <strong>Pagamento via Pix após a compra</strong><br>
         🤝 <strong>Valorizamos sua rede de contatos</strong>
       </p>
 
@@ -122,16 +130,16 @@
       </p>
     </div>
 
-    <form>
-      <div class="buttons">
-        <input type="button" value="Cadastrar" onclick="redirecionarCadastro()">
-      </div>
-    </form>
+    <!-- Botão CTA -->
+    <div class="cta-button">
+      <button onclick="redirecionarCadastro()">Quero meu código de indicação</button>
+    </div>
+
   </div>
 
   <script>
     function redirecionarCadastro() {
-      window.location.href = "cadastro.html"; // Substitua com o link real
+      window.location.assign("cadastro.html"); // Substitua com o link real do formulário
     }
   </script>
 </body>
