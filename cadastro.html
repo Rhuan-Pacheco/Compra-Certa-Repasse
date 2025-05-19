@@ -80,6 +80,14 @@
       color: red;
       margin-top: 15px;
       font-weight: 500;
+      text-align: center;
+    }
+    #carregando {
+      color: #cc0000;
+      text-align: center;
+      display: none;
+      margin-top: 20px;
+      font-weight: 500;
     }
     @media (max-width: 600px) {
       .container {
@@ -95,18 +103,19 @@
 
     <form id="cadastroForm">
       <label for="nome">Nome completo:</label>
-      <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required />
+      <input type="text" id="nome" name="nome" placeholder="Digite seu nome" maxlength="80" required />
 
       <label for="cpf">CPF:</label>
-      <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" required />
+      <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" required autocomplete="off" />
 
       <label for="email">E-mail:</label>
-      <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com" required />
+      <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com" maxlength="80" required autocomplete="off" />
 
       <label for="telefone">Telefone:</label>
-      <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000" maxlength="15" required />
+      <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000" maxlength="15" required autocomplete="off" />
 
       <div id="erro"></div>
+      <div id="carregando">⏳ Enviando seus dados...</div>
 
       <input type="submit" value="Cadastrar" class="submit-btn" />
     </form>
@@ -116,7 +125,7 @@
 
   <script>
     const cpfInput = document.getElementById('cpf');
-    cpfInput.addEventListener('input', function(e) {
+    cpfInput.addEventListener('input', function (e) {
       let v = e.target.value.replace(/\D/g, '');
       if (v.length > 11) v = v.slice(0, 11);
       v = v.replace(/(\d{3})(\d)/, '$1.$2');
@@ -126,7 +135,7 @@
     });
 
     const telefoneInput = document.getElementById('telefone');
-    telefoneInput.addEventListener('input', function(e) {
+    telefoneInput.addEventListener('input', function (e) {
       let v = e.target.value.replace(/\D/g, '');
       if (v.length > 11) v = v.slice(0, 11);
       if (v.length <= 10) {
@@ -157,13 +166,32 @@
       return tel.length === 11 && /^(\d{2})9\d{8}$/.test(tel);
     }
 
-    document.getElementById('cadastroForm').addEventListener('submit', function(e) {
+    function sanitizeInput(str) {
+      return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function fetchComTimeout(resource, options = {}) {
+      const { timeout = 10000 } = options;
+      return Promise.race([
+        fetch(resource, options),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Tempo de resposta esgotado")), timeout)
+        ),
+      ]);
+    }
+
+    document.getElementById('cadastroForm').addEventListener('submit', function (e) {
       e.preventDefault();
 
+      const nome = document.getElementById('nome').value;
       const cpf = cpfInput.value;
+      const email = document.getElementById('email').value;
       const telefone = telefoneInput.value;
       const erro = document.getElementById('erro');
+      const carregando = document.getElementById('carregando');
+      const botao = document.querySelector('.submit-btn');
       erro.textContent = '';
+      carregando.style.display = 'none';
 
       if (!validarCPF(cpf)) {
         erro.textContent = '❌ CPF inválido. Verifique os números digitados.';
@@ -175,27 +203,40 @@
         return;
       }
 
-      const form = e.target;
-      const dados = new FormData(form);
+      const dados = new FormData();
+      dados.append('nome', sanitizeInput(nome));
+      dados.append('cpf', cpf);
+      dados.append('email', sanitizeInput(email));
+      dados.append('telefone', telefone);
 
-      fetch('https://script.google.com/macros/s/AKfycbwFxsEApRl32CagvVguqODcmPQi6931GlXZCHaIJEJ1j90G-yo9CHZhlD-_oSJbzB3R/exec', {
+      botao.disabled = true;
+      botao.value = 'Enviando...';
+      carregando.style.display = 'block';
+
+      fetchComTimeout('https://script.google.com/macros/s/AKfycbwFxsEApRl32CagvVguqODcmPQi6931GlXZCHaIJEJ1j90G-yo9CHZhlD-_oSJbzB3R/exec', {
         method: 'POST',
         body: dados,
+        timeout: 10000,
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === 'success') {
-          window.location.href = 'obrigado.html';
-        } else if (data.status === 'duplicate') {
-          erro.textContent = '❌ Você já está cadastrado com este CPF ou e-mail.';
-        } else {
-          erro.textContent = '❌ Erro ao enviar os dados. Tente novamente.';
-        }
-      })
-      .catch(error => {
-        console.error('Erro:', error);
-        erro.textContent = '❌ Erro de conexão. Verifique sua internet.';
-      });
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            window.location.href = 'obrigado.html';
+          } else if (data.status === 'duplicate') {
+            erro.textContent = '❌ Você já está cadastrado com este CPF ou e-mail.';
+          } else {
+            erro.textContent = '❌ Erro ao enviar os dados. Tente novamente.';
+          }
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          erro.textContent = '❌ Erro de conexão. Verifique sua internet.';
+        })
+        .finally(() => {
+          botao.disabled = false;
+          botao.value = 'Cadastrar';
+          carregando.style.display = 'none';
+        });
     });
   </script>
 </body>
