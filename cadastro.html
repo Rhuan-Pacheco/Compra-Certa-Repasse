@@ -120,89 +120,88 @@
     <a href="index.html" class="back-link">← Voltar</a>
   </div>
 
-  <script>
-    const telefoneInput = document.getElementById('telefone');
-    telefoneInput.addEventListener('input', function (e) {
-      let v = e.target.value.replace(/\D/g, '');
-      if (v.length > 11) v = v.slice(0, 11);
-      if (v.length <= 10) {
-        v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-      } else {
-        v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-      }
-      e.target.value = v;
-    });
+ <script>
+  const telefoneInput = document.getElementById('telefone');
+  telefoneInput.addEventListener('input', function (e) {
+    let v = e.target.value.replace(/\D/g, '');
+    if (v.length > 11) v = v.slice(0, 11);
+    if (v.length <= 10) {
+      v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    } else {
+      v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+    }
+    e.target.value = v;
+  });
 
-    function validarTelefone(tel) {
-      tel = tel.replace(/\D/g, '');
-      return tel.length === 11 && /^(\d{2})9\d{8}$/.test(tel);
+  function validarTelefone(tel) {
+    tel = tel.replace(/\D/g, '');
+    return tel.length === 11 && /^(\d{2})9\d{8}$/.test(tel);
+  }
+
+  function sanitizeInput(str) {
+    return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function fetchComTimeout(resource, options = {}) {
+    const { timeout = 10000 } = options;
+    return Promise.race([
+      fetch(resource, options),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Tempo de resposta esgotado")), timeout)
+      ),
+    ]);
+  }
+
+  document.getElementById('cadastroForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const nome = document.getElementById('nome').value;
+    const email = document.getElementById('email').value;
+    const telefone = telefoneInput.value;
+    const erro = document.getElementById('erro');
+    const carregando = document.getElementById('carregando');
+    const botao = document.querySelector('.submit-btn');
+    erro.textContent = '';
+    carregando.style.display = 'none';
+
+    if (!validarTelefone(telefone)) {
+      erro.textContent = '❌ Telefone inválido. Use o formato com DDD e celular (ex: (11) 99999-9999).';
+      return;
     }
 
-    function sanitizeInput(str) {
-      return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
+    const dados = new FormData();
+    dados.append('nome', sanitizeInput(nome));
+    dados.append('email', sanitizeInput(email));
+    dados.append('telefone', telefone);
 
-    function fetchComTimeout(resource, options = {}) {
-      const { timeout = 10000 } = options;
-      return Promise.race([
-        fetch(resource, options),
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Tempo de resposta esgotado")), timeout)
-        ),
-      ]);
-    }
+    botao.disabled = true;
+    botao.value = 'Enviando...';
+    carregando.style.display = 'block';
 
-    document.getElementById('cadastroForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const nome = document.getElementById('nome').value;
-      const email = document.getElementById('email').value;
-      const telefone = telefoneInput.value;
-      const erro = document.getElementById('erro');
-      const carregando = document.getElementById('carregando');
-      const botao = document.querySelector('.submit-btn');
-      erro.textContent = '';
-      carregando.style.display = 'none';
-
-      if (!validarTelefone(telefone)) {
-        erro.textContent = '❌ Telefone inválido. Use o formato com DDD e celular (ex: (11) 99999-9999).';
-        return;
-      }
-
-      const dados = new FormData();
-      dados.append('nome', sanitizeInput(nome));
-      dados.append('email', sanitizeInput(email));
-      dados.append('telefone', telefone);
-
-      botao.disabled = true;
-      botao.value = 'Enviando...';
-      carregando.style.display = 'block';
-
-      fetchComTimeout('https://script.google.com/macros/s/AKfycbwFxsEApRl32CagvVguqODcmPQi6931GlXZCHaIJEJ1j90G-yo9CHZhlD-_oSJbzB3R/exec', {
-        method: 'POST',
-        body: dados,
-        timeout: 10000,
+    fetchComTimeout('https://script.google.com/macros/s/AKfycbwFxsEApRl32CagvVguqODcmPQi6931GlXZCHaIJEJ1j90G-yo9CHZhlD-_oSJbzB3R/exec', {
+      method: 'POST',
+      body: dados
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          window.location.href = 'obrigado.html';
+        } else if (data.status === 'duplicate') {
+          erro.textContent = '❌ Você já está cadastrado com este e-mail.';
+        } else {
+          erro.textContent = '❌ Erro ao enviar os dados. Tente novamente.';
+        }
       })
-        .then(response => response.json())
-        .then(data => {
-          if (data.status === 'success') {
-            window.location.href = 'obrigado.html';
-          } else if (data.status === 'duplicate') {
-            erro.textContent = '❌ Você já está cadastrado com este e-mail ou telefone.';
-          } else {
-            erro.textContent = '❌ Erro ao enviar os dados. Tente novamente.';
-          }
-        })
-        .catch(error => {
-          console.error('Erro:', error);
-          erro.textContent = '❌ Erro de conexão. Verifique sua internet.';
-        })
-        .finally(() => {
-          botao.disabled = false;
-          botao.value = 'Cadastrar';
-          carregando.style.display = 'none';
-        });
-    });
-  </script>
+      .catch(error => {
+        console.error('Erro:', error);
+        erro.textContent = '❌ Erro de conexão. Verifique sua internet.';
+      })
+      .finally(() => {
+        botao.disabled = false;
+        botao.value = 'Cadastrar';
+        carregando.style.display = 'none';
+      });
+  });
+</script>
 </body>
 </html>
